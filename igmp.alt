@@ -1,0 +1,17 @@
+# v. 0.02
+# na realidade as EXCLUDE do router thomson sao:
+#  232.0.1.1
+#  232.32.0.1
+#  239.192.152.143
+#  239.255.255.250
+# - desta maneira apenas a 232.0.0.0 eh aceite para multicast, apesar de haver ali 2 enderecos q n eh suposto
+quickleave
+phyint vlan12 upstream ratelimit 0 threshold 1
+	altnet 194.65.46.0/23
+	#altnet 10.0.0.0/8
+	altnet 10.173.0.0/16 
+	altnet 213.13.16.0/21
+phyint br0 downstream ratelimit 0 threshold 1
+	whitelist 232.0.0.0/8
+phyint eth1 disabled
+
