@@ -1,7 +1,8 @@
 #!/bin/sh
 # meo router script
-# by luis <at> lvengine <dot> com
-# v. 0.4
+# by zipleen <at> gmail <dot> com
+# v. 0.5
+# 24/12/2012 - o voip usa a gama a seguir ah que eu tinha definido, apesar da meo so usar essa gama de ips, tive de meter o resto da gama
 # 25/12/2010 - rp_filter tem de estar off para multicast funcionar!! tomato fixed!
 # 07/11/2010 - wireless ebtables drop multicast
 # 06/11/2010 - usar o iface para ficar compativel com ddwrt
@@ -20,10 +21,10 @@ bound() {
   
   # definir o ip
   ifconfig $iface $ip netmask $subnet
-  
+ 	
   # rp_filter tem de estar off na vlan12!!!
   echo 0 > /proc/sys/net/ipv4/conf/$iface/rp_filter
-
+   
   # o route original - a rota seguinte ja trata desta, ptt esta n eh necessaria
   #route add -net 10.194.128.0 netmask $subnet gw $router dev $iface 
   
@@ -43,7 +44,7 @@ bound() {
   ## isto eh estranho, este aqui so da ate 23.254! sera que o anterior era a 46.0 -> 46.254 em vez de 46.0 -> 47.254 ?!
   ## 213.13.16.0 / 255.255.248.0 / 21
   ## http://www.aboutmyip.com/AboutMyXApp/SubnetCalculator.jsp?ipAddress=213.13.16.0&cidr=21
-  route add -net 213.13.16.0 netmask 255.255.248.0 gw $router dev $iface 
+  route add -net 213.13.16.0 netmask 255.255.240.0 gw $router dev $iface 
    
   # FORWARD parece ser preciso para passar os packets daquelas outras redes para a rede local
   # SNAT para a br0 conseguir aceder ah nossa redes privadas iptv
@@ -56,12 +57,12 @@ bound() {
   #echo "iptables -I FORWARD -i $iface -o br0 -s 10.173.192.0/18 -j ACCEPT" >> /tmp/iptablesiptv.sh 
   echo "iptables -I FORWARD -i $iface -o br0 -s 10.173.0.0/16 -j ACCEPT" >> /tmp/iptablesiptv.sh
   echo "iptables -I FORWARD -i $iface -o br0 -s 194.65.46.0/23 -j ACCEPT" >> /tmp/iptablesiptv.sh
-  echo "iptables -I FORWARD -i $iface -o br0 -s 213.13.16.0/21 -j ACCEPT" >> /tmp/iptablesiptv.sh
+  echo "iptables -I FORWARD -i $iface -o br0 -s 213.13.16.0/20 -j ACCEPT" >> /tmp/iptablesiptv.sh
   # o router original parece nao dar acesso ah rede 10.x ...
   #echo "iptables --table nat -I POSTROUTING 1 --out-interface $iface --source 192.168.1.0/24 --destination 10.173.192.0/18 --jump SNAT --to-source $ip" >> /tmp/iptablesiptv.sh
   #echo "iptables --table nat -I POSTROUTING 1 --out-interface $iface --source 192.168.1.0/24 --destination 10.173.0.0/16 --jump SNAT --to-source $ip" >> /tmp/iptablesiptv.sh
   echo "iptables --table nat -I POSTROUTING 1 --out-interface $iface --source 192.168.1.0/24 --destination 194.65.46.0/23 --jump SNAT --to-source $ip" >> /tmp/iptablesiptv.sh
-  echo "iptables --table nat -I POSTROUTING 1 --out-interface $iface --source 192.168.1.0/24 --destination 213.13.16.0/21 --jump SNAT --to-source $ip" >> /tmp/iptablesiptv.sh
+  echo "iptables --table nat -I POSTROUTING 1 --out-interface $iface --source 192.168.1.0/24 --destination 213.13.16.0/20 --jump SNAT --to-source $ip" >> /tmp/iptablesiptv.sh
   
   # ebtables necessita build > 52!
   #echo "ebtables -t nat -F" >> /tmp/iptablesiptv.sh 

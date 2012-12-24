@@ -1,7 +1,8 @@
 #!/bin/sh
 # meo router script
-# by luis <at> lvengine <dot> com
-# v. 0.3
+# by zipleen <at> gmail <dot> com
+# v. 0.5
+# 24/12/2012 - pequena modificao por causa do /21 para /20 - voip stuff
 # 11/12/2010 - detectao da directoria pelo dirname e deteccao do programa de igmp a usar para facilitar a vida no ddwrt
 # 06/11/2010 - iface added, para facilitar codigo para ddwrt
 # 22/10/2010 - release inicial
@@ -63,6 +64,6 @@ if [ `ps | grep 'igmpproxy' | grep 'igmp.alt' | wc -l` -eq 0 ]; then
 fi
 
 # como o ddwrt nao tem script de firewall para correr "depois", verificamos aqui se os iptables existem (de uma maneira rudimentar)
-if [ `iptables -L -t nat | grep '213.13.16.0/21' | grep 'SNAT' | wc -l` -eq 0 ]; then
+if [ `iptables -L -t nat | grep '213.13.16.0/20' | grep 'SNAT' | wc -l` -eq 0 ]; then
  /tmp/iptablesiptv.sh
 fi
